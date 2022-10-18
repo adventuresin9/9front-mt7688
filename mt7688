@@ -1,0 +1,54 @@
+# Onion Omega 2  mt7688
+dev
+	root
+	cons
+	swap
+	env
+	pipe
+	proc
+	mnt
+	srv
+	shr
+	dup
+#	arch
+#	draw
+#	rtc
+#	ssl
+	tls
+	cap
+	kprof
+	fs
+	ether		netif
+	ip		arp chandial inferno ip ipv6 ipaux iproute netlog nullmedium pktmedium
+	uart
+
+link
+	loopbackmedium
+	ethermedium
+
+misc
+	uarti8250
+# emulated fp
+#	fpi
+#	fpimips
+#	fpimem
+#	ethermii
+
+ip
+	tcp
+	udp
+	ipifc
+	icmp
+	icmp6
+	gre
+	ipmux
+	esp
+
+port
+	int cpuserver = 0;
+
+bootdir
+	/$objtype/bin/paqfs
+	/$objtype/bin/auth/factotum
+	bootfs.paq
+	boot
