@@ -6,6 +6,8 @@ Was too busy to work on this, and when I found the time, I fugured it would be e
 
 Right now, on the Onion Omega 2+ with the uart-to-usb on the exp dock, using u boot to load the kernel and plan9.ini froma thumb drive, it boots, and "!rc" can be choosen from the ask at bootargs to run rc.
 
+However, the mt7688 does not have a FPU, so any floating point stuff will crash it.  The existing FP emulation requires a patch to tos.h, which is a rather invasive patch to the portable code.
+
 Next will be drivers for the networking, usb, i2c, and sd card reader.
 
 
