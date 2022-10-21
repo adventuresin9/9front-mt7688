@@ -22,8 +22,7 @@
 void
 idlehands(void)
 {
-	//look into something better here
-	//idle();
+	idle();
 }
 
 
