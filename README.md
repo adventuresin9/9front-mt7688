@@ -19,3 +19,8 @@ Unfortunately, the error message is just a colon
 The only driver so far is for the uart.
 
 Development is being done on an Onion Omega2+ (Omega 2 plus)
+
+Credit to;
+9Front's kernel for the SGI Indy
+Plan9's kernel for the mikrotik rb450g and loongson
+And NetBSD for some clues for what memmory to poke
