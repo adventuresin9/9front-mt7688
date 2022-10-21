@@ -150,7 +150,7 @@ TEXT	touser(SB), $-4
 	AND	$(~KMODEMASK), R4
 	OR	$(KUSER|IE|EXL), R4	/* switch to user mode, intrs on, exc */
 	MOVW	R4, M(STATUS)		/* " */
-	WAIT
+	NOOP
 	ERET				/* clears EXL */
 	NOOP
 
@@ -195,20 +195,18 @@ dccache:
 /* enable an interrupt; bit is in R1 */
 TEXT	intron(SB), $0
 	MOVW	M(STATUS), R2
-	WAIT
 	OR	R1, R2
 	MOVW	R2, M(STATUS)
-	WAIT
+	EHB
 	RETURN
 
 /* disable an interrupt; bit is in R1 */
 TEXT	introff(SB), $0
 	MOVW	M(STATUS), R2
-	WAIT
 	XOR	$-1, R1
 	AND	R1, R2
 	MOVW	R2, M(STATUS)
-	WAIT
+	EHB
 	RETURN
 
 TEXT	splhi(SB), $0
@@ -256,7 +254,7 @@ TEXT	idle(SB), $-4
 	/* fall through */
 
 TEXT	wait(SB), $-4
-	WHAT
+	WAIT
 	  NOP
 
 	MOVW	R1, M(STATUS)		/* interrupts restored */
@@ -446,7 +444,7 @@ utlbodd:
 	MOVW	R26, M(TLBPHYS0)
 
 utlbcom:
-	WAIT
+	EHB
 	MOVW	M(TLBVIRT), R26
 	MOVW	0(R27), R27		/* R27 = m->stb[hash].virt */
 	BEQ	R27, stlbm		/* nothing cached? do it the hard way */
@@ -488,7 +486,7 @@ stlbm:
 
 TEXT	gevector(SB), $-4
 	MOVW	M(STATUS), R26
-	WAIT
+	NOOP
 	AND	$KUSER, R26
 
 	BNE	R26, wasuser
@@ -670,7 +668,7 @@ notrestored:
  */
 
 TEXT	vector0(SB), $-4
-	WAIT
+	NOOP
 	CONST	(SPBADDR+0x18, R26)
 	MOVW	$eret(SB), R27
 	MOVW	(R26), R26
@@ -678,7 +676,7 @@ TEXT	vector0(SB), $-4
 	NOOP
 
 TEXT	vector180(SB), $-4
-	WAIT
+	NOOP
 	CONST	(SPBADDR+0x14, R26)
 	MOVW	$eret(SB), R27
 	MOVW	(R26), R26
@@ -751,11 +749,9 @@ fail:
  */
 
 TEXT	icflush(SB), $-4			/* icflush(virtaddr, count) */
-	MOVW	M(STATUS), R10
-	WAIT
 	MOVW	4(FP), R9
-	MOVW	$0, M(STATUS)
-	WAIT
+	DI(10)						/* intrs off, old status -> R10 */
+	UBARRIERS(7, R7, ichb);		/* return to kseg1 (uncached) */
 	ADDU	R1, R9			/* R9 = last address */
 	MOVW	$(~0x3f), R8
 	AND	R1, R8			/* R8 = first address, rounded down */
@@ -772,18 +768,17 @@ icflush1:			/* primary cache line size is 16 bytes */
 	CACHE	PD+HWB, 0x30(R8)
 	CACHE	PI+HINV, 0x30(R8)
 	SUBU	$0x40, R9
-	ADDU	$0x40, R8
 	BGTZ	R9, icflush1
+	ADDU	$0x40, R8			/* delay slot */
+	BARRIERS(7, R7, ic2hb);		/* return to kseg0 (cached) */
 	MOVW	R10, M(STATUS)
-	WAIT
-	RETURN
+	JRHB(31)
 
 TEXT	dcflush(SB), $-4			/* dcflush(virtaddr, count) */
-	MOVW	M(STATUS), R10
-	WAIT
 	MOVW	4(FP), R9
-	MOVW	$0, M(STATUS)
-	WAIT
+	DI(10)						/* intrs off, old status -> R10 */
+	SYNC
+	EHB
 	ADDU	R1, R9			/* R9 = last address */
 	MOVW	$(~0x3f), R8
 	AND	R1, R8			/* R8 = first address, rounded down */
@@ -796,10 +791,11 @@ dcflush1:			/* primary cache line size is 16 bytes */
 	CACHE	PD+HWB, 0x20(R8)
 	CACHE	PD+HWB, 0x30(R8)
 	SUBU	$0x40, R9
-	ADDU	$0x40, R8
 	BGTZ	R9, dcflush1
+	ADDU	$0x40, R8			/* delay slot */
+	SYNC
+	EHB
 	MOVW	R10, M(STATUS)
-	WAIT
 	RETURN
 
 TEXT	outl(SB), $0
@@ -822,7 +818,6 @@ outl2:
 
 TEXT	prid(SB), $0
 	MOVW	M(PRID), R1
-	WAIT
 	RETURN
 
 TEXT	rdcount(SB), $0
