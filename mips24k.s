@@ -3,7 +3,6 @@
 
 #define NOOP		NOR R0, R0, R0
 #define NOP			NOR R0, R0, R0
-#define WAIT		NOOP; NOOP
 #define RETURN		RET; NOOP
 #define CONST(i, v)	MOVW $((i) & 0xffff0000), v; OR $((i) & 0xffff), v;
 #define GETMACH(r)	CONST(MACHADDR, r)
@@ -17,7 +16,7 @@
 #define EHB	WORD $0xc0
 
 #define SYNC	WORD $0xf			/* all sync barriers */
-#define WHAT	WORD $0x42000020		/* wait for interrupt, weird hack by ad9 */
+#define WAIT	WORD $0x42000020		/* wait for interrupt */
 
 /* all barriers, clears all hazards; clobbers r/Reg and R22 */
 #define BARRIERS(r, Reg, label) \
