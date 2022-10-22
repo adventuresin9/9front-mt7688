@@ -4,7 +4,7 @@
 10/21/2022
 The kernel boots on the HLK-7688A from Hi-Link, which is a barebones router board.
 https://www.hlktech.net/index.php?id=432
-It does support tfpt in u-boot, where the stock Onion Omega 2 does not.  Or at least, I haven't figured out how to get the Onion to do it, even with the ethernet addapter.  Either way, I now have the hardware to test the ethernet and switch settings.
+It does support tftp in u-boot, where the stock Onion Omega 2 does not.  Or at least, I haven't figured out how to get the Onion to do it, even with the ethernet addapter.  Either way, I now have the hardware to test the ethernet and switch settings.
 
 10/18/2022
 Was too busy to work on this, and when I found the time, I fugured it would be easier to start over, rather than figure out where I left off.  Turns out some of my previous problems stemmed from some mips, spim, and port code that had been understandably neglegted over the past few years.  Patches need to be done to libc and ape, to get libraries properly built, and to fix a bug in strlen in the spim code.  port/sysproc also needs to be patched for segment alignment.
