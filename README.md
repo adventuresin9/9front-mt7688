@@ -1,6 +1,12 @@
 # 9front-mt7688
 9 Front for the mt7688
 
+11/3/2022
+Updated to boot on the new 9Front release 
+“THE GOLDEN AGE OF BALLOONING”
+http://9front.org/releases/2022/10/31/0/
+
+
 10/21/2022
 The kernel boots on the HLK-7688A from Hi-Link, which is a barebones router board.
 https://www.hlktech.net/index.php?id=432
