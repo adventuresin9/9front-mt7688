@@ -499,9 +499,7 @@ waskernel:
 wasuser:				/* get kernel stack for this user process */
 	GETMACH	(SP)
 	MOVW	8(SP), SP		/*  m->proc */
-	MOVW	8(SP), SP		/*  m->proc->kstack */
-	NOOP
-	ADDU	$(KSTACK-UREGSIZE), SP
+	SUBU	$(UREGSIZE), SP
 
 dosave:
 	MOVW	R31, 0x28(SP)

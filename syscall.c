@@ -64,8 +64,9 @@ syscall(Ureg* ureg)
 		up->s = *((Sargs*)(sp));			/* spim's libc is different to mips ... */
 		up->psstate = sysctab[scallnr];
 
-//		iprint("%s: syscall %s\n", up->text, sysctab[scallnr]?sysctab[scallnr]:"huh?");
+//		iprint("[%luX] %s: syscall %s\n", (ulong)&ureg, up->text, sysctab[scallnr]?sysctab[scallnr]:"huh?");
 //		delay(20);
+//		dumpregs(ureg);
 
 		ret = systab[scallnr]((va_list)up->s.args);
 		poperror();
@@ -74,6 +75,7 @@ syscall(Ureg* ureg)
 		e = up->syserrstr;
 		up->syserrstr = up->errstr;
 		up->errstr = e;
+//		iprint("[%lud %s] syscall %lud: %s\n",up->pid, up->text, scallnr, up->errstr);
 	}
 
 	if(up->nerrlab){
@@ -130,7 +132,7 @@ notify(Ureg *ur)
 {
 	int l, s;
 	ulong sp;
-	Note *n;
+	char *msg;
 
 	if(up->procctl)
 		procctl();
@@ -139,34 +141,13 @@ notify(Ureg *ur)
 
 	s = spllo();
 	qlock(&up->debug);
-	up->notepending = 0;
-	n = &up->note[0];
-	if(strncmp(n->msg, "sys:", 4) == 0) {
-		l = strlen(n->msg);
-		if(l > ERRMAX-15)	/* " pc=0x12345678\0" */
-			l = ERRMAX-15;
-
-		seprint(n->msg+l, &n->msg[sizeof n->msg], " pc=%#lux", ur->pc);
-	}
-
-	if(n->flag != NUser && (up->notified || up->notify==0)) {
-		if(n->flag == NDebug)
-			pprint("suicide: %s\n", n->msg);
-
-		qunlock(&up->debug);
-		pexit(n->msg, n->flag!=NDebug);
-	}
-
-	if(up->notified) {
+	msg = popnote(ur);
+	if(msg == nil){
 		qunlock(&up->debug);
 		splx(s);
 		return 0;
 	}
 
-	if(!up->notify) {
-		qunlock(&up->debug);
-		pexit(n->msg, n->flag!=NDebug);
-	}
 
 	sp = ur->usp - sizeof(Ureg) - BY2WD; /* spim libc */
 
@@ -182,7 +163,7 @@ notify(Ureg *ur)
 	up->ureg = (void*)sp;
 
 	sp -= BY2WD+ERRMAX;
-	memmove((char*)sp, up->note[0].msg, ERRMAX);	/* push err string */
+	memmove((char*)sp, msg, ERRMAX);	/* push err string */
 
 	sp -= 3*BY2WD;
 	*(ulong*)(sp+2*BY2WD) = sp+3*BY2WD;	/* arg 2 is string */
@@ -196,10 +177,10 @@ notify(Ureg *ur)
 	 */
 	ur->pc = (ulong)up->notify;
 
-	up->notified = 1;
-	up->nnote--;
-	memmove(&up->lastnote, &up->note[0], sizeof(Note));
-	memmove(&up->note[0], &up->note[1], up->nnote*sizeof(Note));
+//	up->notified = 1;
+//	up->nnote--;
+//	memmove(&up->lastnote, &up->note[0], sizeof(Note));
+//	memmove(&up->note[0], &up->note[1], up->nnote*sizeof(Note));
 
 	qunlock(&up->debug);
 	splx(s);
@@ -266,14 +247,14 @@ noted(Ureg *kur, ulong arg0)
 
 	default:
 		pprint("unknown noted arg %#lux\n", arg0);
-		up->lastnote.flag = NDebug;
+		up->lastnote->flag = NDebug;
 		/* fall through */
 
 	case NDFLT:
-		if(up->lastnote.flag == NDebug)
-			pprint("suicide: %s\n", up->lastnote.msg);
+		if(up->lastnote->flag == NDebug)
+			pprint("suicide: %s\n", up->lastnote->msg);
 		qunlock(&up->debug);
-		pexit(up->lastnote.msg, up->lastnote.flag!=NDebug);
+		pexit(up->lastnote->msg, up->lastnote->flag!=NDebug);
 	}
 }
 
@@ -283,7 +264,8 @@ forkchild(Proc *p, Ureg *ur)
 {
 	Ureg *cur;
 
-	p->sched.sp = (ulong)p->kstack+KSTACK-UREGSIZE;
+//	iprint("%lud setting up for forking child %lud\n", up->pid, p->pid);
+	p->sched.sp = (ulong)p - UREGSIZE;
 	p->sched.pc = (ulong)forkret;
 
 	cur = (Ureg*)(p->sched.sp+2*BY2WD);
