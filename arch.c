@@ -120,5 +120,5 @@ void
 kprocchild(Proc *p, void (*entry)(void))
 {
 	p->sched.pc = (ulong)entry;
-	p->sched.sp = (ulong)p->kstack+KSTACK;
+	p->sched.sp = (ulong)p;
 }
