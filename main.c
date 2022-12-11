@@ -147,7 +147,7 @@ main(void)
 	printinit();	/* what does this do? */
 	procinit0();
 	initseg();
-	bootlinks();
+	links();
 	chandevreset();
 	userinit();
 

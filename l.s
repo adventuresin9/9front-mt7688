@@ -879,6 +879,20 @@ TEXT	getdebugreg(SB), $0
 	MOVW	M(DEBUGREG), R1
 	RETURN
 
+TEXT	setwatchhi0(SB), $0
+	MOVW	R1, M(WATCHHI)
+	EHB
+	RETURN
+
+/*
+ * beware that the register takes a double-word address, so it's not
+ * precise to the individual instruction.
+ */
+TEXT	setwatchlo0(SB), $0
+	MOVW	R1, M(WATCHLO)
+	EHB
+	RETURN
+
 
 
 /* zoot is just for debug waves */

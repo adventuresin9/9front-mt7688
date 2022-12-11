@@ -18,21 +18,23 @@ dev
 	cap
 	kprof
 	fs
+	sd
 	ether		netif
-	ip		arp chandial inferno ip ipv6 ipaux iproute netlog nullmedium pktmedium
+	ip		arp chandial inferno ip ipv6 ipaux iproute netlog nullmedium pktmedium inferno
 	uart
 
 link
 	loopbackmedium
 	ethermedium
+	netdevmedium
+	ether7688	ethermii
 
 misc
 	uarti8250
 # emulated fp
-#	fpi
-#	fpimips
-#	fpimem
-#	ethermii
+	fpi
+	fpimips
+	fpimem
 
 ip
 	tcp
@@ -52,3 +54,4 @@ bootdir
 	/$objtype/bin/auth/factotum
 	bootfs.paq
 	boot
+	nvram

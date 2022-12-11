@@ -25,20 +25,20 @@ extern char *excname[];
 
 static Fault lflt, maxflt;
 
-ulong*
-reg(Ureg *ur, int regno)
-{
-	ulong *l;
-
-	switch(regno) {
-	case 31: return &ur->r31;
-	case 30: return &ur->r30;
-	case 29: return &ur->sp;
-	default:
-		l = &ur->r1;
-		return &l[regno-1];
-	}
-}
+//ulong*
+//reg(Ureg *ur, int regno)
+//{
+//	ulong *l;
+//
+//	switch(regno) {
+//	case 31: return &ur->r31;
+//	case 30: return &ur->r30;
+//	case 29: return &ur->sp;
+//	default:
+//		l = &ur->r1;
+//		return &l[regno-1];
+//	}
+//}
 
 /*
  * Ask if the instruction at EPC could have cause this badvaddr

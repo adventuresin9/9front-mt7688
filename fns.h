@@ -98,3 +98,7 @@ ulong	incraw(void);
 ulong	incmask(void);
 ulong	incstat(void);
 ulong	incsel(void);
+
+void	setwatchhi0(ulong);
+void	setwatchlo0(ulong);
+int	fpuemu(Ureg *);

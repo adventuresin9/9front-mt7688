@@ -56,15 +56,18 @@ OBJ=\
 	random.$O\
 	syscall.$O\
 	trap.$O\
+	fpi.$O\
+	fpimem.$O\
+	fpimips.$O\
 	$CONF.root.$O\
 	$CONF.rootc.$O\
 	$DEVS\
 	$PORT\
 
 LIB=\
-#	/$objtype/lib/libmemlayer.a\
-#	/$objtype/lib/libmemdraw.a\
-#	/$objtype/lib/libdraw.a\
+	/$objtype/lib/libmemlayer.a\
+	/$objtype/lib/libmemdraw.a\
+	/$objtype/lib/libdraw.a\
 	/$objtype/lib/libauth.a\
 	/$objtype/lib/libsec.a\
 	/$objtype/lib/libmp.a\
@@ -85,9 +88,10 @@ initcode.out: init9.$O initcode.$O /$objtype/lib/libc.a
 	$LD -T$UTZERO -R4 -s -o $target $prereq 
 
 l.$O: mips24k.s
-arch.$O faultmips.$O mmu.$O syscall.$O trap.$O irq.$O: /$objtype/include/ureg.h
+fpimips.$O arch.$O faultmips.$O mmu.$O syscall.$O trap.$O irq.$O: /$objtype/include/ureg.h
 main.$O:	/$objtype/include/ureg.h errstr.h
-main.$O trap.$O syscall.c: /sys/include/tos.h
+main.$O trap.$O syscall.$O fpimips.$O: /sys/include/tos.h
+fpi.$O fpimips.$O fpimem.$O: fpi.h
 
 %.clean:V:
 	rm -f $stem.c [9bz]$stem [9bz]$stem.gz boot$stem.*

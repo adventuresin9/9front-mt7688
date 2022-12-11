@@ -26,6 +26,9 @@ typedef uvlong		Tval;
 /* r3k or r4k boot images */
 #define BOOT_MAGIC	(0x160<<16) || magic == ((0x160<<16)|3)
 
+/* fron legacy /mips/include/u.h */
+#define FPCOND	(1<<23)
+
 /*
  *  machine dependent definitions used by ../port/dat.h
  */
@@ -217,3 +220,18 @@ extern int	normalprint;
 
 #define CONSOLE	0
 
+/*
+ *  hardware info about a device
+ */
+typedef struct {
+	ulong	port;
+	int	size;
+} Devport;
+
+struct DevConf
+{
+	ulong	intnum;			/* interrupt number */
+	char	*type;			/* card type, malloced */
+	int	nports;			/* Number of ports */
+	Devport	*ports;			/* The ports themselves */
+};

@@ -207,8 +207,6 @@ trap(Ureg *ur)
 		break;
 
 	case CCPU:
-		iprint("FPU called_");
-		delay(20);					//no FPU, fix this
 		cop = (ur->cause>>28)&3;
 		if(user && up && cop == 1) {
 			if(up->fpstate & FPillegal) {
@@ -218,13 +216,13 @@ trap(Ureg *ur)
 					NDebug);
 				break;
 			}
-			if(up->fpstate == FPinit || up->fpstate == FPinactive){
-				restfpregs(up->fpsave, up->fpsave->fpstatus&~FPEXPMASK);
-				up->fpstate = FPactive;
-				ur->status |= CU1;
-				break;
-			}
-			fpchk = 1;
+			/* no fpu, so we can only emulate fp ins'ns */
+			if (fpuemu(ur) < 0)
+				postnote(up, 1,
+					"sys: fp instruction not emulated",
+					NDebug);
+			else
+				fpchk = 1;
 			break;
 		}
 		/* Fallthrough */
