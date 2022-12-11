@@ -3,6 +3,8 @@ things to patch first
 port/sysproc.c
 libc/spim/strchr.s
 libc/mips/tas.s <- a mips file that gets placed in spim
+^^ also need to make similar changes in /sys/src/ape
+/sys/include/tos.h <- needed for fpu emulation
 
 ###
 check cleaned irq, intrenable
