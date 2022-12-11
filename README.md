@@ -1,6 +1,12 @@
 # 9front-mt7688
 9 Front for the mt7688
 
+12/11/2022
+Added Ethernet driver and FPU emulation.  The Ethernet driver works okay, but still needs some finishing touches, like clean up if it is shutdown and restarted.  And for now, the switch and ethernet code is combined, but I plan on splitting out switch controls to seperate device files.  FPU emulation is just barely functional.  It is enough for some simple stuff, and it currently allows the system to log into a grid as a cpu server.  It also seems to have some issues with parts of the draw library.  While you can log in to it with drawterm, I've noticed some things like stats, clock, and catclock won't render corectly.  Keep in mind, fpuemu requires a change to tos.h, and that means recompiling everything else that uses tos.h.
+
+To boot it as a CPU server, I included a copy of nvram to be added to the bootdir.  There is an entry for that in the "mt7688" config file.  Then load a plan9.ini that has "nvram=/boot/nvram", "nvroff=0", and "nvrlen=512".  The plan is to later add a driver to access the on board flash, and store nvram there.
+
+
 11/3/2022
 Updated to boot on the new 9Front release 
 “THE GOLDEN AGE OF BALLOONING”
