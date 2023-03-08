@@ -1,6 +1,9 @@
 # 9front-mt7688
 9 Front for the mt7688
 
+3/8/2023
+This kernel has now been added to 9 Front
+
 12/11/2022
 Added Ethernet driver and FPU emulation.  The Ethernet driver works okay, but still needs some finishing touches, like clean up if it is shutdown and restarted.  And for now, the switch and ethernet code is combined, but I plan on splitting out switch controls to seperate device files.  FPU emulation is just barely functional.  It is enough for some simple stuff, and it currently allows the system to log into a grid as a cpu server.  It also seems to have some issues with parts of the draw library.  While you can log in to it with drawterm, I've noticed some things like stats, clock, and catclock won't render corectly.  Keep in mind, fpuemu requires a change to tos.h, and that means recompiling everything else that uses tos.h.
 
